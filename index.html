@@ -7,7 +7,6 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <title>Mis Resultados</title>
-    <!-- Favicon SVG -->
     <link
       rel="icon"
       href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48dGV4dCB5PSIuOWVtIiBmb250LXNpemU9IjkwIj7wn5SNPC90ZXh0Pjwvc3ZnPg=="
@@ -18,15 +17,16 @@
   <body
     class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 min-h-screen py-4 px-3 sm:py-8 sm:px-4 flex flex-col items-center transition-colors duration-300"
   >
-    <div class="max-w-2xl w-full mx-auto">
-      <!-- Header with Title and Theme Toggle -->
+    <div
+      id="appRoot"
+      class="max-w-2xl w-full mx-auto opacity-0 transition-opacity duration-300"
+      aria-busy="true"
+    >
       <div class="flex justify-between items-center mb-6 px-2">
         <h1
           id="pageTitle"
           class="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 tracking-tight"
-        >
-          Calcular resultados
-        </h1>
+        ></h1>
 
         <div class="flex items-center gap-2">
           <label id="langLabel" for="langSelect" class="sr-only">Idioma</label>
@@ -77,14 +77,11 @@
         </div>
       </div>
 
-      <!-- Main Card -->
       <div
         class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none p-5 sm:p-8 border border-slate-100 dark:border-slate-700/50 transition-colors duration-300"
       >
         <div class="space-y-6">
-          <!-- Info Alerts Container -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <!-- Instructions -->
             <div
               class="bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 rounded-xl p-4 text-sm text-blue-800 dark:text-blue-300"
             >
@@ -118,7 +115,6 @@
               </ul>
             </div>
 
-            <!-- Disclaimer -->
             <div
               class="bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 rounded-xl p-4 text-sm text-amber-800 dark:text-amber-400"
             >
@@ -149,23 +145,19 @@
             </div>
           </div>
 
-          <!-- Exam Selection -->
           <div class="mt-4 sm:mt-6">
             <label
               for="examId"
               class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
-            >
-              <span id="labelExam">Prueba</span>
-            </label>
+              ><span id="labelExam"></span
+            ></label>
             <div class="relative">
               <select
                 id="examId"
                 aria-label="Prueba"
                 class="w-full appearance-none border border-slate-300 dark:border-slate-600 rounded-xl py-3.5 pl-4 pr-10 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none shadow-sm transition-colors cursor-pointer"
               >
-                <option value="" disabled selected>
-                  Seleccione una opción...
-                </option>
+                <option value="" disabled selected>...</option>
               </select>
               <div
                 aria-hidden="true"
@@ -192,9 +184,8 @@
             <label
               for="examType"
               class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
-            >
-              <span id="labelModel">Modelo</span>
-            </label>
+              ><span id="labelModel"></span
+            ></label>
             <div class="relative">
               <select
                 id="examType"
@@ -202,9 +193,7 @@
                 aria-describedby="examDataUpdateContainer"
                 class="w-full appearance-none border border-slate-300 dark:border-slate-600 rounded-xl py-3.5 pl-4 pr-10 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none shadow-sm transition-colors cursor-pointer"
               >
-                <option value="" disabled selected>
-                  Seleccione una opción...
-                </option>
+                <option value="" disabled selected>...</option>
               </select>
               <div
                 aria-hidden="true"
@@ -237,9 +226,7 @@
             </div>
           </div>
 
-          <!-- Inputs Method Section -->
           <div class="pt-2">
-            <!-- Tabs -->
             <div
               class="flex p-1 mb-4 bg-slate-100 dark:bg-slate-700/50 rounded-xl w-full mx-auto shadow-inner"
               role="tablist"
@@ -269,7 +256,6 @@
               </button>
             </div>
 
-            <!-- Panel: Text Area -->
             <div
               id="panelText"
               class="hidden"
@@ -283,16 +269,13 @@
                   id="answersLabel"
                   for="studentAnswers"
                   class="block text-sm font-semibold text-slate-700 dark:text-slate-300"
-                >
-                  Respuestas (Formato
-                  <span id="examLengthText2">100</span> letras)
-                </label>
+                ></label>
                 <span
                   id="charCount"
                   role="status"
                   aria-live="polite"
                   class="text-xs font-mono font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700/50 px-2.5 py-1 rounded-md transition-colors"
-                  >0 / 100</span
+                  >0 / 0</span
                 >
               </div>
               <div class="relative">
@@ -307,7 +290,6 @@
               </div>
             </div>
 
-            <!-- Panel: Visual Grid -->
             <div
               id="panelGrid"
               class="block"
@@ -319,19 +301,16 @@
                 <label
                   id="gridLabel"
                   class="block text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5"
-                >
-                  Plantilla interactiva
-                </label>
+                ></label>
                 <span
                   id="gridCount"
                   role="status"
                   aria-live="polite"
                   class="text-xs font-mono font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700/50 px-2.5 py-1 rounded-md transition-colors"
-                  >0 / 100</span
+                  >0 / 0</span
                 >
               </div>
 
-              <!-- Auto-generated Grid container -->
               <div
                 id="omrGrid"
                 class="custom-scroll grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 max-h-[50vh] overflow-y-auto p-3 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl shadow-inner justify-items-center"
@@ -347,7 +326,6 @@
               </div>
             </div>
 
-            <!-- Error Msg -->
             <p
               id="errorMsg"
               role="alert"
@@ -371,7 +349,6 @@
             </p>
           </div>
 
-          <!-- Action Button -->
           <button
             id="calcBtn"
             disabled
@@ -380,7 +357,6 @@
             Seleccione un Tipo de Examen
           </button>
 
-          <!-- Results Display -->
           <div id="resultContainer" class="hidden mt-8 pt-2">
             <div
               id="resultBox"
@@ -393,7 +369,7 @@
               <div
                 class="text-slate-600 dark:text-slate-400 font-medium mb-6 flex items-center justify-center gap-2"
               >
-                <span id="finalScoreLabel">Puntuación Final:</span>
+                <span id="finalScoreLabel"></span>
                 <span
                   id="finalScore"
                   class="text-3xl font-bold text-slate-900 dark:text-white"
@@ -401,7 +377,6 @@
                 >
               </div>
 
-              <!-- Stats Grid -->
               <div class="grid grid-cols-3 gap-3">
                 <div
                   class="flex flex-col bg-white dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700/50 p-3 rounded-xl shadow-sm"
@@ -409,8 +384,7 @@
                   <span
                     id="statCorrectLabel"
                     class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold mb-1"
-                    >Aciertos</span
-                  >
+                  ></span>
                   <span
                     id="statCorrect"
                     class="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400"
@@ -423,8 +397,7 @@
                   <span
                     id="statFailedLabel"
                     class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold mb-1"
-                    >Fallos</span
-                  >
+                  ></span>
                   <span
                     id="statFailed"
                     class="text-xl sm:text-2xl font-bold text-rose-600 dark:text-rose-400"
@@ -437,8 +410,7 @@
                   <span
                     id="statUnansweredLabel"
                     class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold mb-1"
-                    >Blancos</span
-                  >
+                  ></span>
                   <span
                     id="statUnanswered"
                     class="text-xl sm:text-2xl font-bold text-slate-600 dark:text-slate-300"
@@ -448,7 +420,6 @@
               </div>
             </div>
 
-            <!-- Detailed Summary Section -->
             <div
               class="mt-8 border-t border-slate-100 dark:border-slate-700/50 pt-6"
             >
@@ -470,9 +441,10 @@
                 </svg>
                 <span id="detailErrorsTitle">Detalle de Errores</span>
               </h2>
-              <div id="summary" class="flex flex-wrap gap-2 justify-start mb-6">
-                <!-- Dynamic content -->
-              </div>
+              <div
+                id="summary"
+                class="flex flex-wrap gap-2 justify-start mb-6"
+              ></div>
               <div id="examSourceContainer" class="hidden text-center">
                 <a
                   id="examSourceLink"
@@ -494,41 +466,13 @@
                       d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                     ></path>
                   </svg>
-                  <span id="examSourceText">Ver web oficial</span>
+                  <span id="examSourceText"></span>
                 </a>
               </div>
-            </div>
-
-            <!-- Official Links -->
-            <div
-              class="mt-4 pt-6 border-t border-slate-100 dark:border-slate-700/50 text-center"
-            >
-              <a
-                href="https://territori.gencat.cat/ca/03_infraestructures_i_mobilitat/activitats_i_professionals_del_transport/competencia_professional_i_formacio/certificat_aptitud_conductors_professionals/models-questionaris-proves-CAP/index.html#proves-del-20-de-marc-de-2026"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 text-blue-700 dark:text-blue-400 font-bold hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-all shadow-sm"
-              >
-                <svg
-                  class="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                  ></path>
-                </svg>
-                <span id="officialLinkText">Plantillas Oficiales Gencat</span>
-              </a>
             </div>
           </div>
         </div>
 
-        <!-- Footer -->
         <footer
           class="mt-10 pt-6 border-t border-slate-100 dark:border-slate-700/50 flex flex-col sm:flex-row justify-between items-center text-xs sm:text-sm text-slate-500 dark:text-slate-400 gap-4"
         >

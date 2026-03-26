@@ -33,7 +33,6 @@ function ensureDomRefs() {
     if (domRefs) return domRefs;
     domRefs = {
         pageTitle: document.getElementById('pageTitle'),
-        langLabel: document.getElementById('langLabel'),
         instructionsTitle: document.getElementById('instructionsTitle'),
         disclaimerTitle: document.getElementById('disclaimerTitle'),
         disclaimerItem1: document.getElementById('disclaimerItem1'),
@@ -50,7 +49,6 @@ function ensureDomRefs() {
         statFailedLabel: document.getElementById('statFailedLabel'),
         statUnansweredLabel: document.getElementById('statUnansweredLabel'),
         detailErrorsTitle: document.getElementById('detailErrorsTitle'),
-        officialLinkText: document.getElementById('officialLinkText'),
         globalUpdatedLabel: document.getElementById('globalUpdatedLabel'),
         examUpdateLabel: document.getElementById('examUpdateLabel'),
         examSourceText: document.getElementById('examSourceText'),
@@ -153,7 +151,6 @@ function applyTranslations() {
     if (d.statUnansweredLabel) d.statUnansweredLabel.textContent = t('results.blank') || d.statUnansweredLabel.textContent;
 
     if (d.detailErrorsTitle) d.detailErrorsTitle.textContent = t('results.detailErrors') || d.detailErrorsTitle.textContent;
-    if (d.officialLinkText) d.officialLinkText.textContent = t('links.official') || d.officialLinkText.textContent;
     if (d.globalUpdatedLabel) d.globalUpdatedLabel.textContent = t('footer.globalUpdatedLabel') || d.globalUpdatedLabel.textContent;
 
     if (d.examUpdateLabel) d.examUpdateLabel.textContent = t('examUpdate.label') || d.examUpdateLabel.textContent;
@@ -1016,6 +1013,11 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    const appRoot = document.getElementById('appRoot');
+    if (appRoot) {
+        appRoot.classList.remove('opacity-0');
+        appRoot.setAttribute('aria-busy', 'false');
+    }
     switchTab(activeTab);
     checkState();
 });

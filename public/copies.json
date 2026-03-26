@@ -56,8 +56,7 @@
       "templateUnavailable": "Plantilla no disponible",
       "missingAnswers": "Faltan respuestas ({length} necesarias)"
     },
-    "footer": { "globalUpdatedLabel": "Última act:" },
-    "links": { "official": "Plantillas Oficiales Gencat" }
+    "footer": { "globalUpdatedLabel": "Última act:" }
   },
   "ca": {
     "meta": { "title": "Els meus resultats" },
@@ -112,8 +111,7 @@
       "templateUnavailable": "Plantilla no disponible",
       "missingAnswers": "Falten respostes ({length} necessàries)"
     },
-    "footer": { "globalUpdatedLabel": "Últ. act:" },
-    "links": { "official": "Plantilles oficials Gencat" }
+    "footer": { "globalUpdatedLabel": "Últ. act:" }
   },
   "en": {
     "meta": { "title": "My Results" },
@@ -168,7 +166,6 @@
       "templateUnavailable": "Template not available",
       "missingAnswers": "Missing answers ({length} required)"
     },
-    "footer": { "globalUpdatedLabel": "Last update:" },
-    "links": { "official": "Official templates (Gencat)" }
+    "footer": { "globalUpdatedLabel": "Last update:" }
   }
 }
