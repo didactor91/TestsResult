@@ -191,6 +191,25 @@ function applyTranslations() {
     const modelCombo = document.getElementById('modelCombo');
     if (examCombo) examCombo.placeholder = filterPlaceholder();
     if (modelCombo) modelCombo.placeholder = filterPlaceholder();
+    updateOmrEmptyState();
+}
+
+function updateOmrEmptyState() {
+    const emptyState = document.getElementById('omrEmptyState');
+    const emptyText = document.getElementById('omrEmptyText');
+    if (!emptyState || !emptyText) return;
+    if (resultsData === null) {
+        emptyText.textContent = t('status.loadingData') || '';
+        emptyState.classList.remove('hidden');
+        return;
+    }
+    if (!currentExam) {
+        emptyText.textContent = t('grid.empty') || '';
+        emptyState.classList.remove('hidden');
+        return;
+    }
+    emptyText.textContent = '';
+    emptyState.classList.add('hidden');
 }
 
 function updateInstructionsUI() {
@@ -242,6 +261,8 @@ let gridAnswers = [];
 let gridTouched = [];
 let gridClickHandler = null;
 let gridButtonsByQuestion = [];
+let gridRowElements = [];
+let omrGridResizeObserver = null;
 let currentAllowedSet = null;
 let currentAllowedOnlySet = null;
 let currentBlank = '';
@@ -254,6 +275,46 @@ function debounce(fn, wait) {
         clearTimeout(t);
         t = setTimeout(() => fn.apply(this, args), wait);
     };
+}
+
+function getColumnCountFromCssGrid(el) {
+    if (!el) return 1;
+    const style = window.getComputedStyle(el);
+    const tpl = String(style.gridTemplateColumns || '').trim();
+    if (!tpl || tpl === 'none') return 1;
+    return tpl.split(/\s+/).filter(Boolean).length;
+}
+
+function layoutGridColumns() {
+    if (!currentExam) return;
+    const container = document.getElementById('omrGrid');
+    const leftColumn = document.getElementById('omrGridLeft');
+    const rightColumn = document.getElementById('omrGridRight');
+    if (!container || !leftColumn || !rightColumn) return;
+
+    const length = currentExam.length;
+    const cssCols = getColumnCountFromCssGrid(container);
+    const canTwoColumns = cssCols >= 2;
+
+    const useTwoColumns = canTwoColumns && length >= 10;
+    const leftSize = useTwoColumns ? Math.ceil(length / 2) : length;
+
+    leftColumn.innerHTML = '';
+    rightColumn.innerHTML = '';
+    for (let i = 0; i < gridRowElements.length; i++) {
+        const row = gridRowElements[i];
+        if (!row) continue;
+        if (i < leftSize) leftColumn.appendChild(row);
+        else rightColumn.appendChild(row);
+    }
+
+    if (useTwoColumns) {
+        rightColumn.classList.remove('hidden');
+        leftColumn.classList.remove('sm:col-span-2');
+    } else {
+        rightColumn.classList.add('hidden');
+        leftColumn.classList.add('sm:col-span-2');
+    }
 }
 
 function filterPlaceholder() {
@@ -293,9 +354,16 @@ function ensureComboFilter(selectEl, cache, prefix) {
         combo.setAttribute('autocapitalize', 'none');
         combo.setAttribute('autocorrect', 'off');
         combo.spellcheck = false;
-        combo.className = 'w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 px-3 py-2 text-base sm:text-sm text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none shadow-sm';
+        combo.className = selectEl.className
+            .replace('appearance-none', '')
+            .replace('cursor-pointer', 'cursor-text')
+            .trim();
         wrapper.insertBefore(combo, selectEl);
     }
+    combo.className = selectEl.className
+        .replace('appearance-none', '')
+        .replace('cursor-pointer', 'cursor-text')
+        .trim();
     if (!list) {
         list = document.createElement('div');
         list.id = listId;
@@ -638,9 +706,20 @@ function updateExamMetaUI() {
         answersLabel.innerHTML = tHtml('answers.label', { length: currentExam.length }) || answersLabel.innerHTML;
     }
     const statUnansweredWrap = document.getElementById('statUnansweredWrap');
+    const statsGrid = document.getElementById('statsGrid');
     if (statUnansweredWrap) {
-        if (currentExam && currentExam.blankResponse) statUnansweredWrap.classList.remove('hidden');
+        const showBlank = Boolean(currentExam && currentExam.blankResponse);
+        if (showBlank) statUnansweredWrap.classList.remove('hidden');
         else statUnansweredWrap.classList.add('hidden');
+        if (statsGrid) {
+            if (showBlank) {
+                statsGrid.classList.remove('grid-cols-2', 'justify-center', 'justify-items-center');
+                statsGrid.classList.add('grid-cols-3');
+            } else {
+                statsGrid.classList.remove('grid-cols-3');
+                statsGrid.classList.add('grid-cols-2', 'justify-center', 'justify-items-center');
+            }
+        }
     }
     updateInstructionsUI();
     updateTextCounterUI();
@@ -826,6 +905,8 @@ function switchTab(tab) {
         btnGrid.tabIndex = 0;
         btnText.setAttribute('aria-selected', 'false');
         btnText.tabIndex = -1;
+
+        requestAnimationFrame(() => layoutGridColumns());
     }
     checkState();
 }
@@ -836,21 +917,18 @@ function generateGridUI() {
     const rightColumn = document.getElementById('omrGridRight');
 
     if (!container || !leftColumn || !rightColumn) return;
-    if (!currentExam) return;
-
-    leftColumn.innerHTML = '';
-    rightColumn.innerHTML = '';
+    if (!currentExam) {
+        updateOmrEmptyState();
+        return;
+    }
 
     const length = currentExam.length;
     const responses = [
         ...(Array.isArray(currentExam.allowedResponses) ? currentExam.allowedResponses : []),
         ...(currentBlank ? [currentBlank] : []),
     ];
-
-    const leftSize = Math.ceil(length / 2);
     gridButtonsByQuestion = Array.from({ length }, () => ({}));
-    const leftFrag = document.createDocumentFragment();
-    const rightFrag = document.createDocumentFragment();
+    gridRowElements = Array(length);
 
     for (let i = 1; i <= length; i++) {
         const row = document.createElement('div');
@@ -876,13 +954,8 @@ function generateGridUI() {
 
         row.appendChild(numberSpan);
         row.appendChild(options);
-
-        if (i <= leftSize) leftFrag.appendChild(row);
-        else rightFrag.appendChild(row);
+        gridRowElements[i - 1] = row;
     }
-
-    leftColumn.appendChild(leftFrag);
-    rightColumn.appendChild(rightFrag);
 
     if (gridClickHandler) {
         container.removeEventListener('click', gridClickHandler);
@@ -912,7 +985,14 @@ function generateGridUI() {
     };
 
     container.addEventListener('click', gridClickHandler);
+    if (!omrGridResizeObserver && typeof ResizeObserver !== 'undefined') {
+        const relayout = debounce(() => layoutGridColumns(), 60);
+        omrGridResizeObserver = new ResizeObserver(() => relayout());
+        omrGridResizeObserver.observe(container);
+    }
+    layoutGridColumns();
     updateGridUI();
+    updateOmrEmptyState();
 }
 
 function updateGridUI(qIndex) {
@@ -1061,6 +1141,7 @@ if (clearGridBtn) {
 
 function checkState() {
     updateShowCorrectAvailability();
+    updateOmrEmptyState();
     if (resultsData === null) {
         setLoadingState(t('status.loadingData') || 'Cargando datos...');
         return;

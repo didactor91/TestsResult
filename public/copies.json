@@ -39,7 +39,8 @@
     },
     "grid": {
       "label": "Plantilla interactiva",
-      "showCorrect": "Mostrar respuestas"
+      "showCorrect": "Mostrar respuestas",
+      "empty": "Seleccione una prueba para ver la plantilla"
     },
     "examUpdate": { "label": "Datos del examen actualizados:" },
     "results": {
@@ -102,7 +103,8 @@
     },
     "grid": {
       "label": "Plantilla interactiva",
-      "showCorrect": "Mostrar respostes"
+      "showCorrect": "Mostrar respostes",
+      "empty": "Seleccioneu una prova per veure la plantilla"
     },
     "examUpdate": { "label": "Dades de l'examen actualitzades:" },
     "results": {
@@ -163,7 +165,11 @@
       "label": "Answers (Format <span id=\"examLengthText2\">{length}</span> characters)",
       "placeholder": "Example: AXCXAABBC..."
     },
-    "grid": { "label": "Interactive sheet", "showCorrect": "Show answers" },
+    "grid": {
+      "label": "Interactive sheet",
+      "showCorrect": "Show answers",
+      "empty": "Select an exam to see the grid"
+    },
     "examUpdate": { "label": "Exam data updated:" },
     "results": {
       "finalScoreLabel": "Final score:",
