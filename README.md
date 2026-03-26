@@ -1,36 +1,39 @@
-# Resultados OPOS
+# TestsResult
 
-Web estática (Vite + Tailwind) para calcular resultados de tests con plantillas y soporte multilenguaje.
+Static web app (Vite + Tailwind) to calculate multiple-choice test results from official templates, with multilingual UI.
 
-## Desarrollo local
+## Live Demo
 
-Requisitos: Node.js 20+.
+https://didactor91.github.io/TestsResult/
+
+## Local Development
+
+Requirements: Node.js 20+.
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Build estático
+## Static Build
 
 ```bash
 npm run build
 ```
 
-Salida: `dist/`
+Output: `dist/`
 
-## Datos
+## Data Files
 
-- Datos de exámenes: `public/results.json`
-- Traducciones: `public/copies.json`
+- Exam data: `public/results.json`
+- UI translations: `public/copies.json`
 
-## Deploy a GitHub Pages
+## Deploy to GitHub Pages
 
-Este repo incluye un workflow que compila y publica `dist/` automáticamente al hacer push a `main`.
+This repository includes a GitHub Actions workflow that builds and publishes `dist/` automatically on pushes to `main`.
 
-Pasos en GitHub:
+Steps on GitHub:
 
 1. Settings → Pages
 2. Build and deployment → Source: GitHub Actions
-3. Haz push a `main` y espera a que termine el workflow “Deploy to GitHub Pages”
-
+3. Push to `main` and wait for the “Deploy to GitHub Pages” workflow to finish
