@@ -2,8 +2,8 @@
   "updatedAt": "1774380676",
   "results": {
     "dummyDemo10": {
-      "label": "Demo (10 preguntas)",
-      "enabled": false,
+      "label": "Demo - 10 preguntas",
+      "enabled": true,
       "blankResponse": "",
       "allowedResponses": ["A", "B", "C"],
       "evalPoints": {
@@ -17,8 +17,24 @@
       "length": 10,
       "models": [
         {
-          "label": "Modelo único",
+          "label": "Modelo A",
           "results": "ABCABCABCA"
+        },
+        {
+          "label": "Modelo B",
+          "results": "BCABCBACBA"
+        },
+        {
+          "label": "Modelo C",
+          "results": "ACBCBABACC"
+        },
+        {
+          "label": "Modelo D",
+          "results": "CBCABACBDA"
+        },
+        {
+          "label": "Modelo E",
+          "results": "BCBABCACBA"
         }
       ],
       "updatedAt": "1774380676"

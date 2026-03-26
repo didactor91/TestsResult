@@ -55,7 +55,8 @@
       "calc": "Calcular Resultado",
       "mustSelectExam": "Obligatorio: Selecciona Prueba",
       "mustSelectModel": "Obligatorio: Selecciona Modelo",
-      "viewOfficial": "Ver web oficial"
+      "viewOfficial": "Ver web oficial",
+      "clearGrid": "Limpiar hoja"
     },
     "status": {
       "loadingData": "Cargando datos...",
@@ -116,7 +117,8 @@
       "calc": "Calcular resultat",
       "mustSelectExam": "Obligatori: Selecciona Prova",
       "mustSelectModel": "Obligatori: Selecciona Model",
-      "viewOfficial": "Veure web oficial"
+      "viewOfficial": "Veure web oficial",
+      "clearGrid": "Netejar full"
     },
     "status": {
       "loadingData": "Carregant dades...",
@@ -174,7 +176,8 @@
       "calc": "Calculate",
       "mustSelectExam": "Required: Select exam",
       "mustSelectModel": "Required: Select model",
-      "viewOfficial": "View official site"
+      "viewOfficial": "View official site",
+      "clearGrid": "Clear grid"
     },
     "status": {
       "loadingData": "Loading data...",

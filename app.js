@@ -11,6 +11,7 @@ const tabBtnText = document.getElementById('tabBtnText');
 const showCorrectToggle = document.getElementById('showCorrectToggle');
 const showCorrectText = document.getElementById('showCorrectText');
 const showCorrectWrap = document.getElementById('showCorrectWrap');
+const clearGridBtn = document.getElementById('clearGridBtn');
 
 let resultsData = null;
 let examsById = null;
@@ -171,6 +172,7 @@ function applyTranslations() {
     if (d.gridLabel) d.gridLabel.textContent = t('grid.label') || d.gridLabel.textContent;
     if (showCorrectText) showCorrectText.textContent = t('grid.showCorrect') || showCorrectText.textContent;
     if (showCorrectToggle) showCorrectToggle.setAttribute('aria-label', t('grid.showCorrect') || 'Show answers');
+    if (clearGridBtn) clearGridBtn.textContent = t('buttons.clearGrid') || clearGridBtn.textContent;
 
     if (d.finalScoreLabel) d.finalScoreLabel.textContent = t('results.finalScoreLabel') || d.finalScoreLabel.textContent;
     if (d.statCorrectLabel) d.statCorrectLabel.textContent = t('results.correct') || d.statCorrectLabel.textContent;
@@ -239,6 +241,62 @@ let gridButtonsByQuestion = [];
 let currentAllowedSet = null;
 let currentAllowedOnlySet = null;
 let currentBlank = '';
+let examOptionsCache = [];
+let modelOptionsCache = [];
+
+function debounce(fn, wait) {
+    let t = null;
+    return function(...args) {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+    };
+}
+
+function filterPlaceholder() {
+    if (currentLang === 'en') return 'Filter...';
+    if (currentLang === 'ca') return 'Filtrar...';
+    return 'Filtrar...';
+}
+
+function ensureSelectFilter(selectEl, cache, inputId) {
+    if (!selectEl) return;
+    const wrapper = selectEl.parentElement;
+    if (!wrapper) return;
+    let input = document.getElementById(inputId);
+    const needs = Array.isArray(cache) && cache.length > 4;
+    if (!needs) {
+        if (input && input.parentElement) input.parentElement.removeChild(input);
+        return;
+    }
+    if (!input) {
+        input = document.createElement('input');
+        input.id = inputId;
+        input.type = 'text';
+        input.className = 'mb-2 w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none shadow-sm';
+        input.placeholder = filterPlaceholder();
+        wrapper.insertBefore(input, selectEl);
+        const applyFilter = () => {
+            const q = input.value.trim().toLowerCase();
+            const prev = selectEl.value;
+            clearSelectOptions(selectEl, t('select.placeholder') || 'Seleccione una opción...');
+            const items = q ? cache.filter(o => o.label.toLowerCase().includes(q)) : cache.slice();
+            for (const o of items) {
+                const opt = document.createElement('option');
+                opt.value = o.value;
+                opt.textContent = o.label;
+                selectEl.appendChild(opt);
+            }
+            if (items.find(o => o.value === prev)) {
+                selectEl.value = prev;
+            } else {
+                selectEl.value = '';
+            }
+            checkState();
+        };
+        input.addEventListener('input', debounce(applyFilter, 180));
+    }
+    input.placeholder = filterPlaceholder();
+}
 
 const GRID_SELECTED_ANSWER_CLASSES = ['bg-blue-600', 'border-blue-600', 'text-white', 'dark:bg-blue-500', 'dark:border-blue-500', 'dark:text-white'];
 const GRID_SELECTED_BLANK_CLASSES = ['bg-slate-600', 'border-slate-600', 'text-white', 'dark:bg-slate-500', 'dark:border-slate-500', 'dark:text-white'];
@@ -317,11 +375,8 @@ function syncGridFromText() {
     const length = currentExam ? currentExam.length : 0;
     const trimmed = normalized.slice(0, length);
     answerTextarea.value = trimmed;
-    gridTouched = Array.from({ length }, (_, i) => i < trimmed.length);
-    gridAnswers = Array.from(
-        { length },
-        (_, i) => trimmed[i] || (currentBlank ? currentBlank : ''),
-    );
+    gridTouched = Array.from({ length }, (_, i) => Boolean(trimmed[i]));
+    gridAnswers = Array.from({ length }, (_, i) => trimmed[i] || '');
     updateTextCounterUI();
     updateGridUI();
 }
@@ -477,15 +532,20 @@ function populateExamSelect() {
     if (!examSelect || !examsById) return;
     const examIds = Object.keys(examsById);
     clearSelectOptions(examSelect, t('select.placeholder') || 'Seleccione una opción...');
+    examOptionsCache = [];
     for (const id of examIds) {
         const normalized = normalizeExamConfig(id, examsById[id]);
         if (!normalized.enabled) continue;
         if (normalized.length <= 0) continue;
+        examOptionsCache.push({ value: id, label: normalized.label });
+    }
+    for (const o of examOptionsCache) {
         const opt = document.createElement('option');
-        opt.value = id;
-        opt.textContent = normalized.label;
+        opt.value = o.value;
+        opt.textContent = o.label;
         examSelect.appendChild(opt);
     }
+    ensureSelectFilter(examSelect, examOptionsCache, 'examSearchInput');
 }
 
 function populateExamTypeSelect() {
@@ -493,13 +553,18 @@ function populateExamTypeSelect() {
     clearSelectOptions(examTypeSelect, t('select.placeholder') || 'Seleccione una opción...');
     if (!currentExam) return;
     const models = Array.isArray(currentExam.models) ? currentExam.models : [];
+    modelOptionsCache = [];
     for (let i = 0; i < models.length; i++) {
         const model = models[i];
+        modelOptionsCache.push({ value: String(i), label: model.label || `Modelo ${i + 1}` });
+    }
+    for (const o of modelOptionsCache) {
         const opt = document.createElement('option');
-        opt.value = String(i);
-        opt.textContent = model.label || `Modelo ${i + 1}`;
+        opt.value = o.value;
+        opt.textContent = o.label;
         examTypeSelect.appendChild(opt);
     }
+    ensureSelectFilter(examTypeSelect, modelOptionsCache, 'modelSearchInput');
 }
 
 function setCurrentExamById(examId) {
@@ -531,7 +596,7 @@ function setCurrentExamById(examId) {
     currentAllowedSet = new Set([...currentAllowedOnlySet, ...(currentBlank ? [currentBlank] : [])]);
 
     gridTouched = Array(currentExam.length).fill(false);
-    gridAnswers = Array(currentExam.length).fill(currentBlank ? currentBlank : '');
+    gridAnswers = Array(currentExam.length).fill('');
     gridButtonsByQuestion = [];
 
     if (answerTextarea) {
@@ -600,6 +665,7 @@ function switchTab(tab) {
 
     if (tab === 'text') {
         syncTextFromGrid();
+        if (clearGridBtn) clearGridBtn.classList.add('hidden');
         btnText.classList.replace('border-transparent', 'border-slate-200');
         btnText.classList.replace('text-slate-500', 'text-blue-600');
         btnText.classList.add('bg-white', 'shadow-sm', 'dark:bg-slate-800', 'dark:border-slate-600', 'dark:text-blue-400');
@@ -621,6 +687,7 @@ function switchTab(tab) {
         btnGrid.tabIndex = -1;
     } else {
         syncGridFromText();
+        if (clearGridBtn) clearGridBtn.classList.remove('hidden');
         btnGrid.classList.replace('border-transparent', 'border-slate-200');
         btnGrid.classList.replace('text-slate-500', 'text-blue-600');
         btnGrid.classList.add('bg-white', 'shadow-sm', 'dark:bg-slate-800', 'dark:border-slate-600', 'dark:text-blue-400');
@@ -860,6 +927,19 @@ if (showCorrectToggle) {
     });
 }
 
+if (clearGridBtn) {
+    clearGridBtn.addEventListener('click', () => {
+        if (!currentExam) return;
+        hideResults();
+        gridAnswers = Array(currentExam.length).fill('');
+        gridTouched = Array(currentExam.length).fill(false);
+        if (answerTextarea) answerTextarea.value = '';
+        updateTextCounterUI();
+        updateGridUI();
+        checkState();
+    });
+}
+
 function checkState() {
     updateShowCorrectAvailability();
     if (resultsData === null) {
@@ -925,6 +1005,10 @@ function checkState() {
     }
 
     setButtonEnabledState();
+    if (clearGridBtn) {
+        const anyAnswered = gridTouched.some(Boolean) || (answerTextarea ? answerTextarea.value.length > 0 : false);
+        clearGridBtn.disabled = !anyAnswered;
+    }
 }
 
 function calculateGrade() {
