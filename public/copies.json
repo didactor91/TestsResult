@@ -1,0 +1,171 @@
+{
+  "es": {
+    "meta": { "title": "Mis Resultados" },
+    "header": { "title": "Calcular resultados" },
+    "lang": { "label": "Idioma", "ariaLabel": "Idioma" },
+    "instructions": {
+      "title": "Instrucciones",
+      "grid": {
+        "withBlank": "En Modo Hoja marcar <strong>{allowedResponses}</strong>. Marcando <strong>{blankResponse}</strong> para respuesta en Blanco.",
+        "noBlank": "En Modo Hoja marcar <strong>{allowedResponses}</strong>."
+      },
+      "text": {
+        "withBlank": "En modo Texto escribir las <strong>{length}</strong> respuestas sin espacios. Usando <strong>{blankResponse}</strong> para respuestas en Blanco.",
+        "noBlank": "En modo Texto escribir las <strong>{length}</strong> respuestas sin espacios."
+      }
+    },
+    "disclaimer": {
+      "title": "Aviso",
+      "item1": "Resultado <strong>NO</strong> oficial.",
+      "item2": "Uso únicamente orientativo."
+    },
+    "select": {
+      "exam": "Prueba",
+      "model": "Modelo",
+      "placeholder": "Seleccione una opción..."
+    },
+    "tabs": {
+      "grid": "Hoja",
+      "text": "Texto",
+      "ariaLabel": "Modo de entrada"
+    },
+    "answers": {
+      "label": "Respuestas (Formato <span id=\"examLengthText2\">{length}</span> letras)",
+      "placeholder": "Ejemplo: AXCXAABBC..."
+    },
+    "grid": { "label": "Plantilla interactiva" },
+    "examUpdate": { "label": "Datos del examen actualizados:" },
+    "results": {
+      "finalScoreLabel": "Puntuación Final:",
+      "correct": "Aciertos",
+      "incorrect": "Fallos",
+      "blank": "Blancos",
+      "detailErrors": "Detalle de Errores",
+      "pass": "APTO",
+      "fail": "NO APTO",
+      "perfect": "¡Examen perfecto! Ningún fallo ni respuesta en blanco."
+    },
+    "buttons": {
+      "calc": "Calcular Resultado",
+      "mustSelectExam": "Obligatorio: Selecciona Prueba",
+      "mustSelectModel": "Obligatorio: Selecciona Modelo"
+    },
+    "status": {
+      "loadingData": "Cargando datos...",
+      "templateUnavailable": "Plantilla no disponible",
+      "missingAnswers": "Faltan respuestas ({length} necesarias)"
+    },
+    "footer": { "globalUpdatedLabel": "Última act:" },
+    "links": { "official": "Plantillas Oficiales Gencat" }
+  },
+  "ca": {
+    "meta": { "title": "Els meus resultats" },
+    "header": { "title": "Calcular resultats" },
+    "lang": { "label": "Idioma", "ariaLabel": "Idioma" },
+    "instructions": {
+      "title": "Instruccions",
+      "grid": {
+        "withBlank": "En Mode Full marcar <strong>{allowedResponses}</strong>. Marcant <strong>{blankResponse}</strong> per a resposta en blanc.",
+        "noBlank": "En Mode Full marcar <strong>{allowedResponses}</strong>."
+      },
+      "text": {
+        "withBlank": "En mode Text escriure les <strong>{length}</strong> respostes sense espais. Fent servir <strong>{blankResponse}</strong> per a respostes en blanc.",
+        "noBlank": "En mode Text escriure les <strong>{length}</strong> respostes sense espais."
+      }
+    },
+    "disclaimer": {
+      "title": "Avís",
+      "item1": "Resultat <strong>NO</strong> oficial.",
+      "item2": "Ús únicament orientatiu."
+    },
+    "select": {
+      "exam": "Prova",
+      "model": "Model",
+      "placeholder": "Seleccioneu una opció..."
+    },
+    "tabs": { "grid": "Full", "text": "Text", "ariaLabel": "Mode d'entrada" },
+    "answers": {
+      "label": "Respostes (Format <span id=\"examLengthText2\">{length}</span> lletres)",
+      "placeholder": "Exemple: AXCXAABBC..."
+    },
+    "grid": { "label": "Plantilla interactiva" },
+    "examUpdate": { "label": "Dades de l'examen actualitzades:" },
+    "results": {
+      "finalScoreLabel": "Puntuació final:",
+      "correct": "Encerts",
+      "incorrect": "Errors",
+      "blank": "Blanques",
+      "detailErrors": "Detall d'errors",
+      "pass": "APTE",
+      "fail": "NO APTE",
+      "perfect": "Examen perfecte! Cap error ni resposta en blanc."
+    },
+    "buttons": {
+      "calc": "Calcular resultat",
+      "mustSelectExam": "Obligatori: Selecciona Prova",
+      "mustSelectModel": "Obligatori: Selecciona Model"
+    },
+    "status": {
+      "loadingData": "Carregant dades...",
+      "templateUnavailable": "Plantilla no disponible",
+      "missingAnswers": "Falten respostes ({length} necessàries)"
+    },
+    "footer": { "globalUpdatedLabel": "Últ. act:" },
+    "links": { "official": "Plantilles oficials Gencat" }
+  },
+  "en": {
+    "meta": { "title": "My Results" },
+    "header": { "title": "Calculate results" },
+    "lang": { "label": "Language", "ariaLabel": "Language" },
+    "instructions": {
+      "title": "Instructions",
+      "grid": {
+        "withBlank": "In Sheet mode select <strong>{allowedResponses}</strong>. Select <strong>{blankResponse}</strong> for a blank answer.",
+        "noBlank": "In Sheet mode select <strong>{allowedResponses}</strong>."
+      },
+      "text": {
+        "withBlank": "In Text mode type <strong>{length}</strong> answers without spaces. Use <strong>{blankResponse}</strong> for blank answers.",
+        "noBlank": "In Text mode type <strong>{length}</strong> answers without spaces."
+      }
+    },
+    "disclaimer": {
+      "title": "Notice",
+      "item1": "<strong>NOT</strong> an official result.",
+      "item2": "For guidance only."
+    },
+    "select": {
+      "exam": "Exam",
+      "model": "Model",
+      "placeholder": "Select an option..."
+    },
+    "tabs": { "grid": "Sheet", "text": "Text", "ariaLabel": "Input mode" },
+    "answers": {
+      "label": "Answers (Format <span id=\"examLengthText2\">{length}</span> characters)",
+      "placeholder": "Example: AXCXAABBC..."
+    },
+    "grid": { "label": "Interactive sheet" },
+    "examUpdate": { "label": "Exam data updated:" },
+    "results": {
+      "finalScoreLabel": "Final score:",
+      "correct": "Correct",
+      "incorrect": "Incorrect",
+      "blank": "Blank",
+      "detailErrors": "Error details",
+      "pass": "PASS",
+      "fail": "FAIL",
+      "perfect": "Perfect exam! No incorrect or blank answers."
+    },
+    "buttons": {
+      "calc": "Calculate",
+      "mustSelectExam": "Required: Select exam",
+      "mustSelectModel": "Required: Select model"
+    },
+    "status": {
+      "loadingData": "Loading data...",
+      "templateUnavailable": "Template not available",
+      "missingAnswers": "Missing answers ({length} required)"
+    },
+    "footer": { "globalUpdatedLabel": "Last update:" },
+    "links": { "official": "Official templates (Gencat)" }
+  }
+}

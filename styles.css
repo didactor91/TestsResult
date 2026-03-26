@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.input-monospaced {
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: 0.08em;
+    word-break: break-all;
+}
+
+select, button, textarea {
+    font-size: 16px !important;
+}
+
+.custom-scroll::-webkit-scrollbar, textarea::-webkit-scrollbar {
+    width: 8px;
+}
+.custom-scroll::-webkit-scrollbar-track, textarea::-webkit-scrollbar-track {
+    background: transparent;
+}
+.custom-scroll::-webkit-scrollbar-thumb, textarea::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 20px;
+}
+.dark .custom-scroll::-webkit-scrollbar-thumb, .dark textarea::-webkit-scrollbar-thumb {
+    background-color: #475569;
+}
