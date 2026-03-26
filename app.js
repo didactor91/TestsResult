@@ -243,7 +243,8 @@ let currentBlank = '';
 const GRID_SELECTED_ANSWER_CLASSES = ['bg-blue-600', 'border-blue-600', 'text-white', 'dark:bg-blue-500', 'dark:border-blue-500', 'dark:text-white'];
 const GRID_SELECTED_BLANK_CLASSES = ['bg-slate-600', 'border-slate-600', 'text-white', 'dark:bg-slate-500', 'dark:border-slate-500', 'dark:text-white'];
 const GRID_UNSELECTED_CLASSES = ['border-slate-300', 'dark:border-slate-600', 'text-slate-500', 'dark:text-slate-400'];
-const GRID_CORRECT_HINT_CLASSES = ['bg-emerald-50/60', 'dark:bg-emerald-900/15'];
+const GRID_UNSELECTED_HOVER_CLASSES = ['hover:bg-slate-200/60', 'dark:hover:bg-slate-800/60', 'hover:border-slate-400', 'dark:hover:border-slate-500'];
+const GRID_CORRECT_HINT_CLASSES = ['bg-emerald-200', 'dark:bg-emerald-800/40'];
 
 function getSelectedModelIndex() {
     if (!currentExam) return -1;
@@ -667,7 +668,7 @@ function generateGridUI() {
 
     for (let i = 1; i <= length; i++) {
         const row = document.createElement('div');
-        row.className = "w-full max-w-[18rem] flex items-center justify-center gap-3 p-1.5 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800/80 transition-colors";
+        row.className = "w-full max-w-[18rem] flex items-center justify-center gap-3 p-1.5 rounded-lg transition-colors";
 
         const numberSpan = document.createElement('span');
         numberSpan.className = "w-7 text-right font-mono text-sm font-semibold text-slate-600 dark:text-slate-400";
@@ -733,17 +734,20 @@ function updateGridUI(qIndex) {
         btn.classList.remove(...GRID_SELECTED_ANSWER_CLASSES);
         btn.classList.remove(...GRID_SELECTED_BLANK_CLASSES);
         btn.classList.add(...GRID_UNSELECTED_CLASSES);
+        btn.classList.add(...GRID_UNSELECTED_HOVER_CLASSES);
     };
 
     const setSelectedAnswer = (btn) => {
         btn.classList.remove(...GRID_SELECTED_BLANK_CLASSES);
         btn.classList.remove(...GRID_UNSELECTED_CLASSES);
+        btn.classList.remove(...GRID_UNSELECTED_HOVER_CLASSES);
         btn.classList.add(...GRID_SELECTED_ANSWER_CLASSES);
     };
 
     const setSelectedBlank = (btn) => {
         btn.classList.remove(...GRID_SELECTED_ANSWER_CLASSES);
         btn.classList.remove(...GRID_UNSELECTED_CLASSES);
+        btn.classList.remove(...GRID_UNSELECTED_HOVER_CLASSES);
         btn.classList.add(...GRID_SELECTED_BLANK_CLASSES);
     };
 
