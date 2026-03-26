@@ -187,6 +187,10 @@ function applyTranslations() {
     if (d.examSourceText) d.examSourceText.textContent = t('buttons.viewOfficial') || d.examSourceText.textContent;
 
     updateInstructionsUI();
+    const examCombo = document.getElementById('examCombo');
+    const modelCombo = document.getElementById('modelCombo');
+    if (examCombo) examCombo.placeholder = filterPlaceholder();
+    if (modelCombo) modelCombo.placeholder = filterPlaceholder();
 }
 
 function updateInstructionsUI() {
@@ -253,49 +257,164 @@ function debounce(fn, wait) {
 }
 
 function filterPlaceholder() {
-    if (currentLang === 'en') return 'Filter...';
-    if (currentLang === 'ca') return 'Filtrar...';
-    return 'Filtrar...';
+    return t('select.filterPlaceholder') || (currentLang === 'en' ? 'Filter...' : 'Filtrar...');
 }
 
-function ensureSelectFilter(selectEl, cache, inputId) {
-    if (!selectEl) return;
+function ensureComboFilter(selectEl, cache, prefix) {
+    if (!selectEl || !selectEl.parentElement) return;
     const wrapper = selectEl.parentElement;
-    if (!wrapper) return;
-    let input = document.getElementById(inputId);
     const needs = Array.isArray(cache) && cache.length > 4;
+
+    const comboId = `${prefix}Combo`;
+    const listId = `${prefix}List`;
+    let combo = document.getElementById(comboId);
+    let list = document.getElementById(listId);
+
     if (!needs) {
-        if (input && input.parentElement) input.parentElement.removeChild(input);
+        if (combo && combo.parentElement) combo.parentElement.removeChild(combo);
+        if (list && list.parentElement) list.parentElement.removeChild(list);
+        selectEl.classList.remove('hidden');
         return;
     }
-    if (!input) {
-        input = document.createElement('input');
-        input.id = inputId;
-        input.type = 'text';
-        input.className = 'mb-2 w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none shadow-sm';
-        input.placeholder = filterPlaceholder();
-        wrapper.insertBefore(input, selectEl);
-        const applyFilter = () => {
-            const q = input.value.trim().toLowerCase();
-            const prev = selectEl.value;
-            clearSelectOptions(selectEl, t('select.placeholder') || 'Seleccione una opción...');
-            const items = q ? cache.filter(o => o.label.toLowerCase().includes(q)) : cache.slice();
-            for (const o of items) {
-                const opt = document.createElement('option');
-                opt.value = o.value;
-                opt.textContent = o.label;
-                selectEl.appendChild(opt);
-            }
-            if (items.find(o => o.value === prev)) {
-                selectEl.value = prev;
-            } else {
-                selectEl.value = '';
-            }
-            checkState();
-        };
-        input.addEventListener('input', debounce(applyFilter, 180));
+
+    selectEl.classList.add('hidden');
+
+    if (!combo) {
+        combo = document.createElement('input');
+        combo.id = comboId;
+        combo.type = 'text';
+        combo.setAttribute('role', 'combobox');
+        combo.setAttribute('aria-autocomplete', 'list');
+        combo.setAttribute('aria-expanded', 'false');
+        combo.setAttribute('aria-controls', listId);
+        combo.setAttribute('inputmode', 'search');
+        combo.setAttribute('enterkeyhint', 'search');
+        combo.setAttribute('autocomplete', 'off');
+        combo.setAttribute('autocapitalize', 'none');
+        combo.setAttribute('autocorrect', 'off');
+        combo.spellcheck = false;
+        combo.className = 'w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 px-3 py-2 text-base sm:text-sm text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none shadow-sm';
+        wrapper.insertBefore(combo, selectEl);
     }
-    input.placeholder = filterPlaceholder();
+    if (!list) {
+        list = document.createElement('div');
+        list.id = listId;
+        list.className = 'absolute z-10 mt-1 w-full max-h-60 overflow-auto overscroll-contain rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl hidden';
+        list.style.webkitOverflowScrolling = 'touch';
+        wrapper.appendChild(list);
+    }
+
+    combo._comboState = { selectEl, list, cache };
+
+    const selected = cache.find(o => o.value === selectEl.value);
+    combo.value = selected ? selected.label : combo.value;
+    combo.placeholder = filterPlaceholder();
+
+    if (combo.dataset.bound !== '1') {
+        combo.dataset.bound = '1';
+
+        const render = () => {
+            const state = combo._comboState;
+            if (!state) return;
+            const q = combo.value.trim().toLowerCase();
+            const items = q ? state.cache.filter(o => o.label.toLowerCase().includes(q)) : state.cache.slice();
+            state.list.innerHTML = '';
+            if (!items.length) {
+                const empty = document.createElement('div');
+                empty.className = 'px-3 py-2 text-sm text-slate-500 dark:text-slate-400';
+                empty.textContent = '—';
+                state.list.appendChild(empty);
+                return;
+            }
+            for (const o of items) {
+                const div = document.createElement('div');
+                div.className = 'px-3 py-3 text-sm cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200';
+                div.setAttribute('role', 'option');
+                div.setAttribute('data-v', o.value);
+                div.textContent = o.label;
+                div.addEventListener('pointerdown', (e) => {
+                    e.preventDefault();
+                    const st = combo._comboState;
+                    if (!st) return;
+                    st.selectEl.value = o.value;
+                    combo.value = o.label;
+                    st.list.classList.add('hidden');
+                    combo.setAttribute('aria-expanded', 'false');
+                    st.selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+                state.list.appendChild(div);
+            }
+        };
+
+        const renderDebounced = debounce(render, 150);
+
+        combo.addEventListener('focus', () => {
+            const state = combo._comboState;
+            if (!state) return;
+            render();
+            state.list.classList.remove('hidden');
+            combo.setAttribute('aria-expanded', 'true');
+        });
+
+        combo.addEventListener('input', () => renderDebounced());
+
+        combo.addEventListener('keydown', (e) => {
+            const state = combo._comboState;
+            if (!state) return;
+            const items = Array.from(state.list.querySelectorAll('[role="option"]'));
+            const currentIndex = items.findIndex(el => el.classList.contains('bg-slate-100') || el.classList.contains('dark:bg-slate-800'));
+            const setActive = (i) => {
+                items.forEach(el => el.classList.remove('bg-slate-100', 'dark:bg-slate-800'));
+                if (items[i]) items[i].classList.add('bg-slate-100', 'dark:bg-slate-800');
+            };
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (state.list.classList.contains('hidden')) {
+                    render();
+                    state.list.classList.remove('hidden');
+                    combo.setAttribute('aria-expanded', 'true');
+                } else {
+                    const next = Math.min(currentIndex + 1, items.length - 1);
+                    setActive(next < 0 ? 0 : next);
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                const prev = Math.max(currentIndex - 1, 0);
+                setActive(prev);
+            } else if (e.key === 'Enter') {
+                if (!items.length) return;
+                e.preventDefault();
+                const target = items[currentIndex >= 0 ? currentIndex : 0];
+                const val = target.getAttribute('data-v');
+                const label = target.textContent;
+                state.selectEl.value = val;
+                combo.value = label;
+                state.list.classList.add('hidden');
+                combo.setAttribute('aria-expanded', 'false');
+                state.selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+            } else if (e.key === 'Escape') {
+                state.list.classList.add('hidden');
+                combo.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        document.addEventListener('pointerdown', (e) => {
+            const state = combo._comboState;
+            if (!state) return;
+            if (e.target === combo) return;
+            if (state.list.contains(e.target)) return;
+            if (wrapper.contains(e.target)) return;
+            state.list.classList.add('hidden');
+            combo.setAttribute('aria-expanded', 'false');
+        });
+
+        combo.addEventListener('blur', () => setTimeout(() => {
+            const state = combo._comboState;
+            if (!state) return;
+            state.list.classList.add('hidden');
+            combo.setAttribute('aria-expanded', 'false');
+        }, 120));
+    }
 }
 
 const GRID_SELECTED_ANSWER_CLASSES = ['bg-blue-600', 'border-blue-600', 'text-white', 'dark:bg-blue-500', 'dark:border-blue-500', 'dark:text-white'];
@@ -545,7 +664,7 @@ function populateExamSelect() {
         opt.textContent = o.label;
         examSelect.appendChild(opt);
     }
-    ensureSelectFilter(examSelect, examOptionsCache, 'examSearchInput');
+    ensureComboFilter(examSelect, examOptionsCache, 'exam');
 }
 
 function populateExamTypeSelect() {
@@ -564,7 +683,7 @@ function populateExamTypeSelect() {
         opt.textContent = o.label;
         examTypeSelect.appendChild(opt);
     }
-    ensureSelectFilter(examTypeSelect, modelOptionsCache, 'modelSearchInput');
+    ensureComboFilter(examTypeSelect, modelOptionsCache, 'model');
 }
 
 function setCurrentExamById(examId) {

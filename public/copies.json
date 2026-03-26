@@ -25,7 +25,8 @@
     "select": {
       "exam": "Prueba",
       "model": "Modelo",
-      "placeholder": "Seleccione una opción..."
+      "placeholder": "Seleccione una opción...",
+      "filterPlaceholder": "Filtrar..."
     },
     "tabs": {
       "grid": "Hoja",
@@ -91,7 +92,8 @@
     "select": {
       "exam": "Prova",
       "model": "Model",
-      "placeholder": "Seleccioneu una opció..."
+      "placeholder": "Seleccioneu una opció...",
+      "filterPlaceholder": "Filtrar..."
     },
     "tabs": { "grid": "Full", "text": "Text", "ariaLabel": "Mode d'entrada" },
     "answers": {
@@ -153,7 +155,8 @@
     "select": {
       "exam": "Exam",
       "model": "Model",
-      "placeholder": "Select an option..."
+      "placeholder": "Select an option...",
+      "filterPlaceholder": "Filter..."
     },
     "tabs": { "grid": "Sheet", "text": "Text", "ariaLabel": "Input mode" },
     "answers": {
