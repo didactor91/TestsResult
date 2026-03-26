@@ -338,6 +338,9 @@ function ensureComboFilter(selectEl, cache, prefix) {
         return;
     }
 
+    if (!selectEl.dataset.comboBaseClass) {
+        selectEl.dataset.comboBaseClass = selectEl.className;
+    }
     selectEl.classList.add('hidden');
 
     if (!combo) {
@@ -354,16 +357,22 @@ function ensureComboFilter(selectEl, cache, prefix) {
         combo.setAttribute('autocapitalize', 'none');
         combo.setAttribute('autocorrect', 'off');
         combo.spellcheck = false;
-        combo.className = selectEl.className
+        const baseClass = selectEl.dataset.comboBaseClass || selectEl.className;
+        combo.className = baseClass
+            .replaceAll('hidden', '')
             .replace('appearance-none', '')
             .replace('cursor-pointer', 'cursor-text')
             .trim();
         wrapper.insertBefore(combo, selectEl);
     }
-    combo.className = selectEl.className
-        .replace('appearance-none', '')
-        .replace('cursor-pointer', 'cursor-text')
-        .trim();
+    {
+        const baseClass = selectEl.dataset.comboBaseClass || selectEl.className;
+        combo.className = baseClass
+            .replaceAll('hidden', '')
+            .replace('appearance-none', '')
+            .replace('cursor-pointer', 'cursor-text')
+            .trim();
+    }
     if (!list) {
         list = document.createElement('div');
         list.id = listId;
