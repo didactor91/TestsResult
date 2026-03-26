@@ -1148,9 +1148,20 @@ if (clearGridBtn) {
     });
 }
 
+function updateClearGridButtonState() {
+    if (!clearGridBtn) return;
+    if (activeTab !== 'grid') {
+        clearGridBtn.disabled = true;
+        return;
+    }
+    const anyAnswered = gridTouched.some(Boolean);
+    clearGridBtn.disabled = !anyAnswered;
+}
+
 function checkState() {
     updateShowCorrectAvailability();
     updateOmrEmptyState();
+    updateClearGridButtonState();
     if (resultsData === null) {
         setLoadingState(t('status.loadingData') || 'Cargando datos...');
         return;
@@ -1214,10 +1225,6 @@ function checkState() {
     }
 
     setButtonEnabledState();
-    if (clearGridBtn) {
-        const anyAnswered = gridTouched.some(Boolean) || (answerTextarea ? answerTextarea.value.length > 0 : false);
-        clearGridBtn.disabled = !anyAnswered;
-    }
 }
 
 function calculateGrade() {
