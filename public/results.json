@@ -3,7 +3,7 @@
   "results": {
     "dummyDemo10": {
       "label": "Demo (10 preguntas)",
-      "enabled": true,
+      "enabled": false,
       "blankResponse": "",
       "allowedResponses": ["A", "B", "C"],
       "evalPoints": {
@@ -21,7 +21,8 @@
           "results": "ABCABCABCA"
         }
       ],
-      "updatedAt": "1774380676"
+      "updatedAt": "1774380676",
+      "sourceURL": "https://gencat.cat/portal/web/resultats-oposicio/resultats"
     },
     "capCat260320": {
       "label": "CAP Inicial Catalunya 20/03/26",
@@ -55,7 +56,8 @@
           "results": "AABDABABDBACBCAADBAAADDDCBBDCDDDABABBDDBBADDBAADADBBABBAABDCABADACCACBCBDBCBDABCDCBDCDBBBDCDCABDAADC"
         }
       ],
-      "updatedAt": "1774362456"
+      "updatedAt": "1774362456",
+      "sourceURL": "https://gencat.cat/portal/web/resultats-oposicio/resultats"
     }
   }
 }

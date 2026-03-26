@@ -28,17 +28,82 @@ function resolveCopy(obj, path) {
     return cur;
 }
 
+let domRefs = null;
+function ensureDomRefs() {
+    if (domRefs) return domRefs;
+    domRefs = {
+        pageTitle: document.getElementById('pageTitle'),
+        langLabel: document.getElementById('langLabel'),
+        instructionsTitle: document.getElementById('instructionsTitle'),
+        disclaimerTitle: document.getElementById('disclaimerTitle'),
+        disclaimerItem1: document.getElementById('disclaimerItem1'),
+        disclaimerItem2: document.getElementById('disclaimerItem2'),
+        labelExam: document.getElementById('labelExam'),
+        labelModel: document.getElementById('labelModel'),
+        tabsContainer: document.querySelector('[role="tablist"]'),
+        tabGrid: document.getElementById('tabBtnGrid'),
+        tabText: document.getElementById('tabBtnText'),
+        answersLabel: document.getElementById('answersLabel'),
+        gridLabel: document.getElementById('gridLabel'),
+        finalScoreLabel: document.getElementById('finalScoreLabel'),
+        statCorrectLabel: document.getElementById('statCorrectLabel'),
+        statFailedLabel: document.getElementById('statFailedLabel'),
+        statUnansweredLabel: document.getElementById('statUnansweredLabel'),
+        detailErrorsTitle: document.getElementById('detailErrorsTitle'),
+        officialLinkText: document.getElementById('officialLinkText'),
+        globalUpdatedLabel: document.getElementById('globalUpdatedLabel'),
+        examUpdateLabel: document.getElementById('examUpdateLabel'),
+        examSourceText: document.getElementById('examSourceText'),
+        instructionsGridItem: document.getElementById('instructionsGridItem'),
+        instructionsTextItem: document.getElementById('instructionsTextItem')
+    };
+    return domRefs;
+}
+
+function escapeHtml(value) {
+    return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+}
+
+function interpolate(template, vars, escapeVars) {
+    let out = String(template);
+    if (vars && typeof vars === 'object') {
+        for (const [k, v] of Object.entries(vars)) {
+            const safe = escapeVars ? escapeHtml(v) : String(v);
+            out = out.replaceAll(`{${k}}`, safe);
+        }
+    }
+    return out;
+}
+
 function t(key, vars) {
     const fromLang = resolveCopy(copiesByLang && copiesByLang[currentLang], key);
     const fromEs = resolveCopy(copiesByLang && copiesByLang.es, key);
-    let value = fromLang ?? fromEs ?? '';
-    value = String(value);
-    if (vars && typeof vars === 'object') {
-        for (const [k, v] of Object.entries(vars)) {
-            value = value.replaceAll(`{${k}}`, String(v));
-        }
+    const value = fromLang ?? fromEs ?? '';
+    return interpolate(value, vars, false);
+}
+
+function tHtml(key, vars) {
+    const fromLang = resolveCopy(copiesByLang && copiesByLang[currentLang], key);
+    const fromEs = resolveCopy(copiesByLang && copiesByLang.es, key);
+    const value = fromLang ?? fromEs ?? '';
+    return interpolate(value, vars, true);
+}
+
+function sanitizeExternalUrl(url) {
+    const raw = String(url || '').trim();
+    if (!raw) return '';
+    try {
+        const u = new URL(raw);
+        if (u.protocol !== 'http:' && u.protocol !== 'https:') return '';
+        return u.toString();
+    } catch {
+        return '';
     }
-    return value;
 }
 
 function setLang(lang, persist) {
@@ -51,73 +116,57 @@ function setLang(lang, persist) {
 }
 
 function applyTranslations() {
+    const d = ensureDomRefs();
     const metaTitle = t('meta.title');
     if (metaTitle) document.title = metaTitle;
 
-    const pageTitle = document.getElementById('pageTitle');
-    if (pageTitle) pageTitle.textContent = t('header.title') || pageTitle.textContent;
+    if (d.pageTitle) d.pageTitle.textContent = t('header.title') || d.pageTitle.textContent;
 
     if (langLabel) langLabel.textContent = t('lang.label') || langLabel.textContent;
     if (langSelect) langSelect.setAttribute('aria-label', t('lang.ariaLabel') || 'Language');
 
-    const instructionsTitle = document.getElementById('instructionsTitle');
-    if (instructionsTitle) instructionsTitle.textContent = t('instructions.title') || instructionsTitle.textContent;
+    if (d.instructionsTitle) d.instructionsTitle.textContent = t('instructions.title') || d.instructionsTitle.textContent;
 
-    const disclaimerTitle = document.getElementById('disclaimerTitle');
-    if (disclaimerTitle) disclaimerTitle.textContent = t('disclaimer.title') || disclaimerTitle.textContent;
+    if (d.disclaimerTitle) d.disclaimerTitle.textContent = t('disclaimer.title') || d.disclaimerTitle.textContent;
 
-    const disclaimerItem1 = document.getElementById('disclaimerItem1');
-    if (disclaimerItem1) disclaimerItem1.innerHTML = t('disclaimer.item1') || disclaimerItem1.innerHTML;
-    const disclaimerItem2 = document.getElementById('disclaimerItem2');
-    if (disclaimerItem2) disclaimerItem2.innerHTML = t('disclaimer.item2') || disclaimerItem2.innerHTML;
+    if (d.disclaimerItem1) d.disclaimerItem1.innerHTML = t('disclaimer.item1') || d.disclaimerItem1.innerHTML;
+    if (d.disclaimerItem2) d.disclaimerItem2.innerHTML = t('disclaimer.item2') || d.disclaimerItem2.innerHTML;
 
-    const labelExam = document.getElementById('labelExam');
-    if (labelExam) labelExam.textContent = t('select.exam') || labelExam.textContent;
-    const labelModel = document.getElementById('labelModel');
-    if (labelModel) labelModel.textContent = t('select.model') || labelModel.textContent;
+    if (d.labelExam) d.labelExam.textContent = t('select.exam') || d.labelExam.textContent;
+    if (d.labelModel) d.labelModel.textContent = t('select.model') || d.labelModel.textContent;
 
-    const tabsContainer = document.querySelector('[role="tablist"]');
-    if (tabsContainer) tabsContainer.setAttribute('aria-label', t('tabs.ariaLabel') || tabsContainer.getAttribute('aria-label') || '');
-    const tabGrid = document.getElementById('tabBtnGrid');
-    if (tabGrid) tabGrid.textContent = t('tabs.grid') || tabGrid.textContent;
-    const tabText = document.getElementById('tabBtnText');
-    if (tabText) tabText.textContent = t('tabs.text') || tabText.textContent;
+    if (d.tabsContainer) d.tabsContainer.setAttribute('aria-label', t('tabs.ariaLabel') || d.tabsContainer.getAttribute('aria-label') || '');
+    if (d.tabGrid) d.tabGrid.textContent = t('tabs.grid') || d.tabGrid.textContent;
+    if (d.tabText) d.tabText.textContent = t('tabs.text') || d.tabText.textContent;
 
-    const answersLabel = document.getElementById('answersLabel');
     const length = currentExam ? currentExam.length : Number(document.getElementById('examLengthText2')?.textContent || 0);
-    if (answersLabel) {
-        answersLabel.innerHTML = t('answers.label', { length }) || answersLabel.innerHTML;
+    if (d.answersLabel) {
+        d.answersLabel.innerHTML = tHtml('answers.label', { length }) || d.answersLabel.innerHTML;
     }
     if (answerTextarea) answerTextarea.placeholder = t('answers.placeholder') || answerTextarea.placeholder;
 
-    const gridLabel = document.getElementById('gridLabel');
-    if (gridLabel) gridLabel.textContent = t('grid.label') || gridLabel.textContent;
+    if (d.gridLabel) d.gridLabel.textContent = t('grid.label') || d.gridLabel.textContent;
 
-    const finalScoreLabel = document.getElementById('finalScoreLabel');
-    if (finalScoreLabel) finalScoreLabel.textContent = t('results.finalScoreLabel') || finalScoreLabel.textContent;
-    const statCorrectLabel = document.getElementById('statCorrectLabel');
-    if (statCorrectLabel) statCorrectLabel.textContent = t('results.correct') || statCorrectLabel.textContent;
-    const statFailedLabel = document.getElementById('statFailedLabel');
-    if (statFailedLabel) statFailedLabel.textContent = t('results.incorrect') || statFailedLabel.textContent;
-    const statUnansweredLabel = document.getElementById('statUnansweredLabel');
-    if (statUnansweredLabel) statUnansweredLabel.textContent = t('results.blank') || statUnansweredLabel.textContent;
+    if (d.finalScoreLabel) d.finalScoreLabel.textContent = t('results.finalScoreLabel') || d.finalScoreLabel.textContent;
+    if (d.statCorrectLabel) d.statCorrectLabel.textContent = t('results.correct') || d.statCorrectLabel.textContent;
+    if (d.statFailedLabel) d.statFailedLabel.textContent = t('results.incorrect') || d.statFailedLabel.textContent;
+    if (d.statUnansweredLabel) d.statUnansweredLabel.textContent = t('results.blank') || d.statUnansweredLabel.textContent;
 
-    const detailErrorsTitle = document.getElementById('detailErrorsTitle');
-    if (detailErrorsTitle) detailErrorsTitle.textContent = t('results.detailErrors') || detailErrorsTitle.textContent;
-    const officialLinkText = document.getElementById('officialLinkText');
-    if (officialLinkText) officialLinkText.textContent = t('links.official') || officialLinkText.textContent;
-    const globalUpdatedLabel = document.getElementById('globalUpdatedLabel');
-    if (globalUpdatedLabel) globalUpdatedLabel.textContent = t('footer.globalUpdatedLabel') || globalUpdatedLabel.textContent;
+    if (d.detailErrorsTitle) d.detailErrorsTitle.textContent = t('results.detailErrors') || d.detailErrorsTitle.textContent;
+    if (d.officialLinkText) d.officialLinkText.textContent = t('links.official') || d.officialLinkText.textContent;
+    if (d.globalUpdatedLabel) d.globalUpdatedLabel.textContent = t('footer.globalUpdatedLabel') || d.globalUpdatedLabel.textContent;
 
-    const examUpdateLabel = document.getElementById('examUpdateLabel');
-    if (examUpdateLabel) examUpdateLabel.textContent = t('examUpdate.label') || examUpdateLabel.textContent;
+    if (d.examUpdateLabel) d.examUpdateLabel.textContent = t('examUpdate.label') || d.examUpdateLabel.textContent;
+
+    if (d.examSourceText) d.examSourceText.textContent = t('buttons.viewOfficial') || d.examSourceText.textContent;
 
     updateInstructionsUI();
 }
 
 function updateInstructionsUI() {
-    const gridItem = document.getElementById('instructionsGridItem');
-    const textItem = document.getElementById('instructionsTextItem');
+    const d = ensureDomRefs();
+    const gridItem = d.instructionsGridItem;
+    const textItem = d.instructionsTextItem;
     if (!gridItem || !textItem) return;
 
     const allowedResponses = currentExam ? currentExam.allowedResponses.join(', ') : 'A, B, C, D';
@@ -125,11 +174,11 @@ function updateInstructionsUI() {
     const length = currentExam ? currentExam.length : 100;
 
     if (blankResponse) {
-        gridItem.innerHTML = t('instructions.grid.withBlank', { allowedResponses, blankResponse }) || gridItem.innerHTML;
-        textItem.innerHTML = t('instructions.text.withBlank', { length, blankResponse }) || textItem.innerHTML;
+        gridItem.innerHTML = tHtml('instructions.grid.withBlank', { allowedResponses, blankResponse }) || gridItem.innerHTML;
+        textItem.innerHTML = tHtml('instructions.text.withBlank', { length, blankResponse }) || textItem.innerHTML;
     } else {
-        gridItem.innerHTML = t('instructions.grid.noBlank', { allowedResponses }) || gridItem.innerHTML;
-        textItem.innerHTML = t('instructions.text.noBlank', { length }) || textItem.innerHTML;
+        gridItem.innerHTML = tHtml('instructions.grid.noBlank', { allowedResponses }) || gridItem.innerHTML;
+        textItem.innerHTML = tHtml('instructions.text.noBlank', { length }) || textItem.innerHTML;
     }
 }
 
@@ -287,6 +336,7 @@ function normalizeExamConfig(examId, rawExam) {
     const minPoints = toNum(rawExam && rawExam.minPoints);
     const maxPoints = toNum(rawExam && rawExam.maxPoints);
     const successPoints = toNum(rawExam && rawExam.successPoints);
+    const sourceURL = rawExam && rawExam.sourceURL ? String(rawExam.sourceURL).trim() : '';
 
     return {
         id: examId,
@@ -297,6 +347,7 @@ function normalizeExamConfig(examId, rawExam) {
         blankResponse: normalizedBlankResponse,
         models,
         updatedAt,
+        sourceURL,
         evalPoints,
         minPoints,
         maxPoints,
@@ -326,13 +377,6 @@ function formatUpdatedAt(value) {
     return raw;
 }
 
-const examTypeLabelOverrides = {
-    mercA: 'Mercancías A',
-    mercB: 'Mercancías B',
-    viajA: 'Viajeros A',
-    viajB: 'Viajeros B',
-};
-
 function updateExamMetaUI() {
     const lengthText2 = document.getElementById('examLengthText2');
     if (lengthText2) lengthText2.textContent = currentExam ? String(currentExam.length) : '0';
@@ -356,7 +400,7 @@ function updateExamMetaUI() {
 
     const answersLabel = document.getElementById('answersLabel');
     if (answersLabel && currentExam) {
-        answersLabel.innerHTML = t('answers.label', { length: currentExam.length }) || answersLabel.innerHTML;
+        answersLabel.innerHTML = tHtml('answers.label', { length: currentExam.length }) || answersLabel.innerHTML;
     }
     updateInstructionsUI();
     updateTextCounterUI();
@@ -444,16 +488,21 @@ function setCurrentExamById(examId) {
     generateGridUI();
 }
 
+async function fetchJson(path) {
+    const res = await fetch(path, { cache: 'no-store' });
+    if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+    }
+    const data = await res.json();
+    if (!data || typeof data !== 'object') {
+        throw new Error('Invalid JSON');
+    }
+    return data;
+}
+
 async function loadResultsData() {
     try {
-        const res = await fetch('./results.json', { cache: 'no-store' });
-        if (!res.ok) {
-            throw new Error(`HTTP ${res.status}`);
-        }
-        const data = await res.json();
-        if (!data || typeof data !== 'object') {
-            throw new Error('Invalid JSON');
-        }
+        const data = await fetchJson('./results.json');
         resultsData = data;
         examsById = data.results && typeof data.results === 'object' ? data.results : null;
         return true;
@@ -467,14 +516,7 @@ async function loadResultsData() {
 
 async function loadCopiesData() {
     try {
-        const res = await fetch('./copies.json', { cache: 'no-store' });
-        if (!res.ok) {
-            throw new Error(`HTTP ${res.status}`);
-        }
-        const data = await res.json();
-        if (!data || typeof data !== 'object') {
-            throw new Error('Invalid JSON');
-        }
+        const data = await fetchJson('./copies.json');
         copiesByLang = data;
         return true;
     } catch (e) {
@@ -679,6 +721,8 @@ function updateGridUI(qIndex) {
 function hideResults() {
     const resultContainer = document.getElementById('resultContainer');
     if (resultContainer) resultContainer.classList.add('hidden');
+    const examSourceContainer = document.getElementById('examSourceContainer');
+    if (examSourceContainer) examSourceContainer.classList.add('hidden');
 }
 
 if (examSelect) {
@@ -834,6 +878,21 @@ function calculateGrade() {
     errorMessage.classList.add('hidden');
     resultContainer.classList.remove('hidden');
     summaryBox.innerHTML = '';
+    const examSourceContainer = document.getElementById('examSourceContainer');
+    const examSourceLink = document.getElementById('examSourceLink');
+    const examSourceText = document.getElementById('examSourceText');
+    if (examSourceContainer && examSourceLink && examSourceText) {
+        const url = sanitizeExternalUrl(currentExam && currentExam.sourceURL);
+        if (url) {
+            examSourceLink.href = url;
+            examSourceText.textContent = t('buttons.viewOfficial') || 'Ver web oficial';
+            examSourceContainer.classList.remove('hidden');
+        } else {
+            examSourceLink.href = '#';
+            examSourceText.textContent = '';
+            examSourceContainer.classList.add('hidden');
+        }
+    }
 
     let correctCount = 0;
     let failedCount = 0;

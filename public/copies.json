@@ -48,7 +48,8 @@
     "buttons": {
       "calc": "Calcular Resultado",
       "mustSelectExam": "Obligatorio: Selecciona Prueba",
-      "mustSelectModel": "Obligatorio: Selecciona Modelo"
+      "mustSelectModel": "Obligatorio: Selecciona Modelo",
+      "viewOfficial": "Ver web oficial"
     },
     "status": {
       "loadingData": "Cargando datos...",
@@ -103,7 +104,8 @@
     "buttons": {
       "calc": "Calcular resultat",
       "mustSelectExam": "Obligatori: Selecciona Prova",
-      "mustSelectModel": "Obligatori: Selecciona Model"
+      "mustSelectModel": "Obligatori: Selecciona Model",
+      "viewOfficial": "Veure web oficial"
     },
     "status": {
       "loadingData": "Carregant dades...",
@@ -158,7 +160,8 @@
     "buttons": {
       "calc": "Calculate",
       "mustSelectExam": "Required: Select exam",
-      "mustSelectModel": "Required: Select model"
+      "mustSelectModel": "Required: Select model",
+      "viewOfficial": "View official site"
     },
     "status": {
       "loadingData": "Loading data...",
