@@ -8,6 +8,9 @@ const calcBtn = document.getElementById('calcBtn');
 const errorMessage = document.getElementById('errorMsg');
 const tabBtnGrid = document.getElementById('tabBtnGrid');
 const tabBtnText = document.getElementById('tabBtnText');
+const showCorrectToggle = document.getElementById('showCorrectToggle');
+const showCorrectText = document.getElementById('showCorrectText');
+const showCorrectWrap = document.getElementById('showCorrectWrap');
 
 let resultsData = null;
 let examsById = null;
@@ -16,6 +19,13 @@ let currentExam = null;
 let copiesByLang = null;
 let currentLang = 'es';
 const LANG_STORAGE_KEY = 'lang';
+const SHOW_CORRECT_STORAGE_KEY = 'showCorrect';
+let showCorrectAnswers = false;
+try {
+    showCorrectAnswers = localStorage.getItem(SHOW_CORRECT_STORAGE_KEY) === 'true';
+} catch {
+    showCorrectAnswers = false;
+}
 
 function resolveCopy(obj, path) {
     if (!obj) return undefined;
@@ -117,6 +127,21 @@ function applyTranslations() {
     const d = ensureDomRefs();
     const metaTitle = t('meta.title');
     if (metaTitle) document.title = metaTitle;
+    const metaDescription = t('meta.description');
+    if (metaDescription) {
+        const el = document.getElementById('metaDescription');
+        if (el) el.setAttribute('content', metaDescription);
+        const og = document.getElementById('ogDescription');
+        if (og) og.setAttribute('content', metaDescription);
+        const tw = document.getElementById('twitterDescription');
+        if (tw) tw.setAttribute('content', metaDescription);
+    }
+    if (metaTitle) {
+        const ogTitle = document.getElementById('ogTitle');
+        if (ogTitle) ogTitle.setAttribute('content', metaTitle);
+        const twTitle = document.getElementById('twitterTitle');
+        if (twTitle) twTitle.setAttribute('content', metaTitle);
+    }
 
     if (d.pageTitle) d.pageTitle.textContent = t('header.title') || d.pageTitle.textContent;
 
@@ -144,6 +169,8 @@ function applyTranslations() {
     if (answerTextarea) answerTextarea.placeholder = t('answers.placeholder') || answerTextarea.placeholder;
 
     if (d.gridLabel) d.gridLabel.textContent = t('grid.label') || d.gridLabel.textContent;
+    if (showCorrectText) showCorrectText.textContent = t('grid.showCorrect') || showCorrectText.textContent;
+    if (showCorrectToggle) showCorrectToggle.setAttribute('aria-label', t('grid.showCorrect') || 'Show answers');
 
     if (d.finalScoreLabel) d.finalScoreLabel.textContent = t('results.finalScoreLabel') || d.finalScoreLabel.textContent;
     if (d.statCorrectLabel) d.statCorrectLabel.textContent = t('results.correct') || d.statCorrectLabel.textContent;
@@ -216,6 +243,42 @@ let currentBlank = '';
 const GRID_SELECTED_ANSWER_CLASSES = ['bg-blue-600', 'border-blue-600', 'text-white', 'dark:bg-blue-500', 'dark:border-blue-500', 'dark:text-white'];
 const GRID_SELECTED_BLANK_CLASSES = ['bg-slate-600', 'border-slate-600', 'text-white', 'dark:bg-slate-500', 'dark:border-slate-500', 'dark:text-white'];
 const GRID_UNSELECTED_CLASSES = ['border-slate-300', 'dark:border-slate-600', 'text-slate-500', 'dark:text-slate-400'];
+const GRID_CORRECT_HINT_CLASSES = ['bg-emerald-50/60', 'dark:bg-emerald-900/15'];
+
+function getSelectedModelIndex() {
+    if (!currentExam) return -1;
+    const models = Array.isArray(currentExam.models) ? currentExam.models : [];
+    if (examTypeSelect && examTypeSelect.value !== '') return Number(examTypeSelect.value);
+    if (models.length === 1) return 0;
+    return -1;
+}
+
+function getCurrentTemplateString() {
+    if (!currentExam) return '';
+    const models = Array.isArray(currentExam.models) ? currentExam.models : [];
+    const selectedIndex = getSelectedModelIndex();
+    if (!Number.isFinite(selectedIndex) || selectedIndex < 0 || selectedIndex >= models.length) return '';
+    const template = String(models[selectedIndex].results || '').toUpperCase();
+    if (template.length < currentExam.length) return '';
+    return template;
+}
+
+function updateShowCorrectAvailability() {
+    if (!showCorrectToggle) return;
+    const templateOk = Boolean(getCurrentTemplateString());
+    showCorrectToggle.disabled = !templateOk;
+    if (!templateOk) {
+        showCorrectAnswers = false;
+        showCorrectToggle.checked = false;
+        try {
+            localStorage.setItem(SHOW_CORRECT_STORAGE_KEY, 'false');
+        } catch {}
+    }
+    if (showCorrectWrap) {
+        showCorrectWrap.classList.toggle('opacity-50', !templateOk);
+        showCorrectWrap.classList.toggle('cursor-not-allowed', !templateOk);
+    }
+}
 
 function normalizeAnswersText(input) {
     const value = String(input || "").toUpperCase();
@@ -398,6 +461,11 @@ function updateExamMetaUI() {
     const answersLabel = document.getElementById('answersLabel');
     if (answersLabel && currentExam) {
         answersLabel.innerHTML = tHtml('answers.label', { length: currentExam.length }) || answersLabel.innerHTML;
+    }
+    const statUnansweredWrap = document.getElementById('statUnansweredWrap');
+    if (statUnansweredWrap) {
+        if (currentExam && currentExam.blankResponse) statUnansweredWrap.classList.remove('hidden');
+        else statUnansweredWrap.classList.add('hidden');
     }
     updateInstructionsUI();
     updateTextCounterUI();
@@ -679,14 +747,23 @@ function updateGridUI(qIndex) {
         btn.classList.add(...GRID_SELECTED_BLANK_CLASSES);
     };
 
+    const template = showCorrectAnswers ? getCurrentTemplateString() : '';
+    const showCorrect = Boolean(template);
     const updateQuestion = (idx) => {
         const buttonsMap = gridButtonsByQuestion[idx];
         if (!buttonsMap) return;
+        const correctChar = showCorrect ? template[idx] : '';
         const selected = gridAnswers[idx];
         const touched = Boolean(gridTouched[idx]);
         for (const val in buttonsMap) {
             const btn = buttonsMap[val];
-            if (selected === val && (!currentBlank || val !== currentBlank || touched)) {
+            const isSelected = selected === val && (!currentBlank || val !== currentBlank || touched);
+            if (showCorrect && val === correctChar && !isSelected) {
+                btn.classList.add(...GRID_CORRECT_HINT_CLASSES);
+            } else {
+                btn.classList.remove(...GRID_CORRECT_HINT_CLASSES);
+            }
+            if (isSelected) {
                 if (currentBlank && val === currentBlank) setSelectedBlank(btn);
                 else setSelectedAnswer(btn);
             } else {
@@ -733,6 +810,7 @@ if (examSelect) {
 if (examTypeSelect) {
     examTypeSelect.addEventListener('change', () => {
         hideResults();
+        updateGridUI();
         checkState();
     });
 }
@@ -767,7 +845,19 @@ if (calcBtn) {
     calcBtn.addEventListener('click', () => calculateGrade());
 }
 
+if (showCorrectToggle) {
+    showCorrectToggle.checked = showCorrectAnswers;
+    showCorrectToggle.addEventListener('change', () => {
+        showCorrectAnswers = Boolean(showCorrectToggle.checked);
+        try {
+            localStorage.setItem(SHOW_CORRECT_STORAGE_KEY, showCorrectAnswers ? 'true' : 'false');
+        } catch {}
+        updateGridUI();
+    });
+}
+
 function checkState() {
+    updateShowCorrectAvailability();
     if (resultsData === null) {
         setLoadingState(t('status.loadingData') || 'Cargando datos...');
         return;

@@ -1,6 +1,9 @@
 {
   "es": {
-    "meta": { "title": "Mis Resultados" },
+    "meta": {
+      "title": "Mis Resultados",
+      "description": "Calcula resultados de tests tipo test a partir de plantillas oficiales. Interfaz multilenguaje y reglas por examen."
+    },
     "header": { "title": "Calcular resultados" },
     "lang": { "label": "Idioma", "ariaLabel": "Idioma" },
     "instructions": {
@@ -33,7 +36,10 @@
       "label": "Respuestas (Formato <span id=\"examLengthText2\">{length}</span> letras)",
       "placeholder": "Ejemplo: AXCXAABBC..."
     },
-    "grid": { "label": "Plantilla interactiva" },
+    "grid": {
+      "label": "Plantilla interactiva",
+      "showCorrect": "Mostrar respuestas"
+    },
     "examUpdate": { "label": "Datos del examen actualizados:" },
     "results": {
       "finalScoreLabel": "Puntuación Final:",
@@ -59,7 +65,10 @@
     "footer": { "globalUpdatedLabel": "Última act:" }
   },
   "ca": {
-    "meta": { "title": "Els meus resultats" },
+    "meta": {
+      "title": "Els meus resultats",
+      "description": "Calcula resultats de tests a partir de plantilles oficials. Interfície multilingüe i regles per examen."
+    },
     "header": { "title": "Calcular resultats" },
     "lang": { "label": "Idioma", "ariaLabel": "Idioma" },
     "instructions": {
@@ -88,7 +97,10 @@
       "label": "Respostes (Format <span id=\"examLengthText2\">{length}</span> lletres)",
       "placeholder": "Exemple: AXCXAABBC..."
     },
-    "grid": { "label": "Plantilla interactiva" },
+    "grid": {
+      "label": "Plantilla interactiva",
+      "showCorrect": "Mostrar respostes"
+    },
     "examUpdate": { "label": "Dades de l'examen actualitzades:" },
     "results": {
       "finalScoreLabel": "Puntuació final:",
@@ -114,7 +126,10 @@
     "footer": { "globalUpdatedLabel": "Últ. act:" }
   },
   "en": {
-    "meta": { "title": "My Results" },
+    "meta": {
+      "title": "My Results",
+      "description": "Calculate multiple-choice test results from official templates. Multilingual UI and per-exam scoring rules."
+    },
     "header": { "title": "Calculate results" },
     "lang": { "label": "Language", "ariaLabel": "Language" },
     "instructions": {
@@ -143,7 +158,7 @@
       "label": "Answers (Format <span id=\"examLengthText2\">{length}</span> characters)",
       "placeholder": "Example: AXCXAABBC..."
     },
-    "grid": { "label": "Interactive sheet" },
+    "grid": { "label": "Interactive sheet", "showCorrect": "Show answers" },
     "examUpdate": { "label": "Exam data updated:" },
     "results": {
       "finalScoreLabel": "Final score:",
